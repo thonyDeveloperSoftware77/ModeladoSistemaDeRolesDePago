@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react'
 import { useUser } from '../../controllers/useProvider';
@@ -17,6 +16,9 @@ export default function emisor() {
         } else if (user) {
 
             if (fields?.value == user[0]?.Emisor) {
+                router.push({ pathname: '/dashboard' }, '/dashboard');
+                router.push({ pathname: '/dashboard' }, '/dashboard');
+                router.push({ pathname: '/dashboard' }, '/dashboard');
                 router.push({ pathname: '/dashboard' }, '/dashboard');
 
                 alert("Correcto")

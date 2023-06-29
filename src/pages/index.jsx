@@ -35,7 +35,10 @@ export default function Home() {
           }
         });
         setUser(dataRenderTables)
-      });
+      }).catch((error) => {
+        alert("Usuario o contraseña incorrecta")
+      })
+      ;
 
   }
 
@@ -56,9 +59,9 @@ export default function Home() {
         <h2>Login</h2>
         <form onSubmit={handleSubmit}>
           <span>Ingrese el Usuario</span>
-          <input type="text" name="" placeholder='Usuario' id="" ref={usuario} />
+          <input type="text" name="" pattern="\d{4}" maxlength="4" title="Por favor ingresa 4 dígitos numéricos" placeholder='Usuario' id="" ref={usuario} required />
           <span>Ingrese la contraseña</span>
-          <input type="password" name="" placeholder='Contraseña' ref={password} id="" />
+          <input type="password" name="" placeholder='Contraseña' required ref={password} id="" />
           <center>
             <button>
               Ingresar
