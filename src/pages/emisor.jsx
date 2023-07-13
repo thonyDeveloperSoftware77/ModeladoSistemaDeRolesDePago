@@ -3,8 +3,16 @@
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react'
 import { useUser } from '../../controllers/useProvider';
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 export default function emisor() {
+
+    const notifySucces = () => toast("Exito!");
+    const notifyError = (message) => toast.error("Error, vuelva a intentar");
+
     const router = useRouter();
+
 
     const { user, setUser } = useUser();
     const [emisor, setEmisor] = useState([])
@@ -21,10 +29,9 @@ export default function emisor() {
                 router.push({ pathname: '/dashboard' }, '/dashboard');
                 router.push({ pathname: '/dashboard' }, '/dashboard');
 
-                alert("Correcto")
+                notifySucces()
             } else {
-                alert("Emisor Incorrecto")
-
+                notifyError()
             }
         }
 
@@ -54,6 +61,9 @@ export default function emisor() {
     return (
 
         <main>
+            <ToastContainer
+                theme="dark"
+            />
             <div className='EmisorForm'>
                 <h2>Emisor</h2>
                 <form onSubmit={handleSubmit} >
@@ -70,7 +80,7 @@ export default function emisor() {
                             )
                         })}
                     </select>
-                    <button type='submit' >
+                    <button className='botonActualizar'  type='submit' >
                         Ingresar
                     </button>
                 </form>

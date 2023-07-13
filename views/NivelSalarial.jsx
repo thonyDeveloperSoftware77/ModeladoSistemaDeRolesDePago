@@ -82,20 +82,6 @@ export default function NivelSalarial() {
             {
                 accessorKey: 'Descripcion',
                 header: 'Descripcion',
-            },
-
-            {
-                accessorKey: 'actions',
-                header: 'Actualizar',
-                Cell: ({ row }) => (
-                    <button onClick={() => handleRowSave(row)}><BsPersonFillUp /> Actualizar</button>
-                ),
-            }, {
-                accessorKey: 'actions2',
-                header: 'Eliminar',
-                Cell: ({ row }) => (
-                    <button className='botonEliminar' onClick={() => handleDelete(row)}><BsPersonFillDash size={15} /> Eliminar</button>
-                ),
             }
         ],
         [],
@@ -132,7 +118,7 @@ export default function NivelSalarial() {
                 <h2>
                     Registros
                 </h2>
-                <MaterialReactTable columns={columns} data={data} enableRowActions />
+                <MaterialReactTable columns={columns} data={data} enableRowActions={false} />
             </div>
 
 

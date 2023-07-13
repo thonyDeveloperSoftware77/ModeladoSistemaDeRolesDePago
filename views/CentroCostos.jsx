@@ -6,14 +6,18 @@ import Image from 'next/image'
 import { BsPersonFillAdd, BsPersonFillDash, BsPersonFillUp } from 'react-icons/bs'
 import { useEffect, useState, useRef, useMemo } from 'react';
 import MaterialReactTable from 'material-react-table';
+import { AiOutlineAppstoreAdd } from 'react-icons/ai'
 export default function CentroCostos() {
 
     //State para guardar los datos de la tabla
     const [data, setData] = useState([])
-    const [dataUpdate, setDataUpdate] = useState([])
+    const [dataUpdate, setDataUpdate] = useState(false)
     const Codigo = useRef(null)
     const NombreCentroCostos = useRef(null)
 
+
+    //State para mostrar el formulario de ingreso
+    const [mostrarFormulario, setMostrarFormulario] = useState(false)
 
 
     //Use state para mostrar el modal de editar
@@ -35,7 +39,7 @@ export default function CentroCostos() {
         fetch(`/api/centroCostosPost?codigocentrocostos=${Codigo.current.value}&descripcioncentrocostos=${NombreCentroCostos.current.value}`)
             .then(response => response.json())
             .then(data => {
-                setDataUpdate(data)
+                setDataUpdate(!dataUpdate)
             });
     }
     //Funcion para Eliminar
@@ -44,7 +48,7 @@ export default function CentroCostos() {
         fetch(`/api/centroCostosDelete?codigocentrocostos=${row.original.Codigo}&descripcioncentrocostos=${row.original.NombreCentroCostos}`)
             .then(response => response.json())
             .then(data => {
-                setDataUpdate(data)
+                setDataUpdate(!dataUpdate)
             });
     }
     //Funcion para Actualizar
@@ -65,7 +69,7 @@ export default function CentroCostos() {
 
             .then(response => response.json())
             .then(data => {
-                setDataUpdate(data)
+                setDataUpdate(!dataUpdate)
             });
         setMostrarEditar(false)
 
@@ -91,7 +95,7 @@ export default function CentroCostos() {
                 accessorKey: 'actions',
                 header: 'Actualizar',
                 Cell: ({ row }) => (
-                    <button onClick={() => handleRowSave(row)}><BsPersonFillUp /> Actualizar</button>
+                    <button className='botonActualizar' onClick={() => handleRowSave(row)}><BsPersonFillUp /> Actualizar</button>
                 ),
             }, {
                 accessorKey: 'actions2',
@@ -135,9 +139,14 @@ export default function CentroCostos() {
                 </h1>
             </div>
             <div>
-                <form onSubmit={handleSubmit} >
+                <div style={{ display: "flex" }}>
                     <h2>Agregar un Centro de Costos</h2>
-                    <div style={{ display: "flex", width: "100%", justifyContent: "space-between", alignItems:"flex-end" }}>
+                    <a style={{ cursor: "pointer" }} onClick={() => setMostrarFormulario(!mostrarFormulario)} >  <AiOutlineAppstoreAdd color='#06B6E0' size={29} /></a>
+                </div>
+
+
+                <form className={mostrarFormulario ? "mostrarForm" : "ocultarForm"} onSubmit={handleSubmit} style={{ marginBottom: "50px" }}  >
+                    <div style={{ display: "flex", width: "100%", justifyContent: "space-between", alignItems: "flex-end" }}>
                         <div>
                             <span>Ingrese el codigo del Centro de Costos</span>
                             <input type="number" ref={Codigo} />
@@ -146,9 +155,9 @@ export default function CentroCostos() {
                             <span>Ingrese el nombre del Centro de Costos</span>
                             <input type="text" ref={NombreCentroCostos} />
                         </div>
-                        <div style={{alignContent:"center"}}>
+                        <div style={{ alignContent: "center" }}>
                             <center>
-                            <button className='botonAgregar' type="submit"> Agregar</button>
+                                <button className='botonAgregar' type="submit"> Agregar</button>
 
                             </center>
 
@@ -162,11 +171,11 @@ export default function CentroCostos() {
 
 
             </div>
-            <div style={{marginTop:"5%"}}>
+            <div style={{ marginTop: "5%" }}>
                 <h2>
                     Centros de Costos Registrados
                 </h2>
-                <MaterialReactTable columns={columns} data={data} enableRowActions />
+                <MaterialReactTable columns={columns} data={data} enableRowActions={false} />
             </div>
 
             <div>

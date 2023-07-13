@@ -7,9 +7,13 @@ import { AiOutlineAppstoreAdd } from 'react-icons/ai';
 import { BsPersonFillAdd, BsPersonFillDash, BsPersonFillUp } from 'react-icons/bs'
 import { useEffect, useState, useRef, useMemo } from 'react';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useUser } from '../controllers/useProvider';
 import MaterialReactTable from 'material-react-table';
 export default function Trabajador() {
+
+    const notifyError = (message) => toast.error("Error del servidor vuelva a intentar");
 
     const { user, setUser } = useUser();
     const [emisor, setEmisor] = useState([])
@@ -25,12 +29,14 @@ export default function Trabajador() {
     const [FondoReserva, setFondoReserva] = useState([])
     const [periodoVacaciones, setPeriodoVacaciones] = useState([])
 
+    const [dataUpdate, setDataUpdate] = useState(false)
+
     const [data, setData] = useState([])
     //State para mostrar el formulario de ingreso
     const [mostrarFormulario, setMostrarFormulario] = useState(false)
 
     //Referencias para los inputs
-    const [fields, setFields] = useState({ value: null, valuePost: null, tipoTrabajdorPost: null, GeneroPost: null, categoriaPost: null, ocupacionPost: null, centroCosto: null, nivelSalarialPost: null, EstadoTrabajadorPost: null, TipoContrato: null, TipoCese: null, EstadoCivil: null, TipodeComision: null, EsReingreso: null, Tipo_Cuenta: null, decimoTercero: null, decimoCuarto: null, Fondo_Reserva: null, periodoVacaciones: null, FechaNacimiento: null, FechaIngreso: null, FechaCese: null, periodoVacaciones: null, fechaReingreso: null, Fecha_Ult_Actualizacion: null, EsReingreso: null, Tipo_Cuenta: null, decimoTercero: null, decimoCuarto: null, BoniComplementaria: null, BoniEspecial: null, RemuneracionMinima: null, FondoReserva: null, Mensaje: null })
+    const [fields, setFields] = useState({ value: null, valuePost: null, tipoTrabajdorPost: null, GeneroPost: null, categoriaPost: null, ocupacionPost: null, centroCosto: null, nivelSalarialPost: null, EstadoTrabajadorPost: null, TipoContrato: null, TipoCese: null, EstadoCivil: null, TipodeComision: null, Tipo_Cuenta: null, decimoTercero: null, decimoCuarto: null, Fondo_Reserva: null, periodoVacaciones: null, periodoVacaciones: null, EsReingreso: null, Tipo_Cuenta: null, decimoTercero: null, decimoCuarto: null, BoniComplementaria: null, BoniEspecial: null, RemuneracionMinima: null, FondoReserva: null, Mensaje: null, EsReingresoPost: null })
 
     //Referencias para los inputs del Post Trabajador
     const Apellido_Paterno = useRef(null)
@@ -58,24 +64,15 @@ export default function Trabajador() {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        if (Codigo.current.value === "" || NombreCentroCostos.current.value === "" || Codigo.current.value === null || NombreCentroCostos.current.value === null) {
-            alert("Ingrese todos los campos")
-        }
+        fetch(`/api/trabajadorPost?COMP_Codigo=${fields.valuePost}&Tipo_trabajador=${fields.tipoTrabajdorPost}&Apellido_Paterno=${Apellido_Paterno.current.value}&Apellido_Materno=${Apellido_Materno.current.value}&Nombres=${Nombres.current.value}&Identificacion=${Identificacion.current.value}&Entidad_Bancaria=${Entidad_Bancaria.current.value}&CarnetIESS=${CarnetIESS.current.value}&Direccion=${Direccion.current.value}&Telefono_Fijo=${Telefono_Fijo.current.value}&Telefono_Movil=${Telefono_Movil.current.value}&Genero=${fields.GeneroPost}&Nro_Cuenta_Bancaria=${NumeroCuentaBancaria.current.value}&Codigo_Categoria_Ocupacion=${fields.categoriaPost}&Ocupacion=${fields.ocupacionPost}&Centro_Costos=${fields.centroCosto}&Nivel_Salarial=${fields.nivelSalarialPost}&EstadoTrabajador=${fields.EstadoTrabajadorPost}&Tipo_Contrato=${fields.TipoContrato}&Tipo_Cese=${fields.TipoCese}&EstadoCivil=${fields.EstadoCivil}&TipodeComision=${fields.TipodeComision}&FechaNacimiento=${FechaNacimiento.current.value}&FechaIngreso=${FechaIngreso.current.value}&FechaCese=${FechaCese.current.value}&PeriododeVacaciones=${fields.periodoVacaciones}&FechaReingreso=${FechaReingreso.current.value}&Fecha_Ult_Actualizacion=${Fecha_Ult_Actualizacion.current.value}&EsReingreso=${fields.EsReingresoPost}&Tipo_Cuenta=${fields.Tipo_Cuenta}&FormaCalculo13ro=${fields.decimoTercero}&FormaCalculo14ro=${fields.decimoCuarto}&BoniComplementaria=${BoniComplementaria.current.value}&BoniEspecial=${BoniEspecial.current.value}&Remuneracion_Minima=${RemuneracionMinima.current.value}&Fondo_Reserva=${fields.Fondo_Reserva}`)
+            .then(() => setDataUpdate(!dataUpdate));
 
-        fetch(`/api/centroCostosPost?codigocentrocostos=${Codigo.current.value}&descripcioncentrocostos=${NombreCentroCostos.current.value}`)
-            .then(response => response.json())
-            .then(data => {
-                setDataUpdate(data)
-            });
     }
     //Funcion para Eliminar
     const handleDelete = (row) => {
         console.log(row)
-        fetch(`/api/centroCostosDelete?codigocentrocostos=${row.original.Codigo}&descripcioncentrocostos=${row.original.NombreCentroCostos}`)
-            .then(response => response.json())
-            .then(data => {
-                setDataUpdate(data)
-            });
+        fetch(`/api/trabajadorDelete?sucursal=${row.original.COMP_Codigo}&codigoempleado=${row.original.Id_Trabajador}`)
+            .then(() => setDataUpdate(!dataUpdate));
     }
     //Funcion para Actualizar
     const handleRowSave = (row) => {
@@ -95,7 +92,7 @@ export default function Trabajador() {
 
             .then(response => response.json())
             .then(data => {
-                setDataUpdate(data)
+                setDataUpdate(dataUpdate)
             });
         setMostrarEditar(false)
 
@@ -236,12 +233,6 @@ export default function Trabajador() {
                 header: 'Mensaje',
             },
             {
-                accessorKey: 'actions',
-                header: 'Actualizar',
-                Cell: ({ row }) => (
-                    <button onClick={() => handleRowSave(row)}><BsPersonFillUp /> Actualizar</button>
-                ),
-            }, {
                 accessorKey: 'actions2',
                 header: 'Eliminar',
                 Cell: ({ row }) => (
@@ -399,6 +390,12 @@ export default function Trabajador() {
             });
 
 
+
+
+    }, [])
+
+    useEffect(() => {
+
         fetch(`/api/trabajador?sucursal=${fields.value}`)
             .then(response => response.json())
             .then(data => {
@@ -453,12 +450,16 @@ export default function Trabajador() {
                 console.log(dataRenderTables)
             });
 
-    }, [fields.value])
+    }, [fields.value, dataUpdate])
+
 
 
     return (
 
         <main>
+            <ToastContainer
+                theme="dark"
+            />
             <div style={{ display: "flex", alignItems: "center" }}>
                 <h3>Crear un nuevo Trabajador</h3>
                 <a style={{ cursor: "pointer" }} onClick={() => setMostrarFormulario(!mostrarFormulario)} >  <AiOutlineAppstoreAdd color='#06B6E0' size={29} /></a>
@@ -496,15 +497,15 @@ export default function Trabajador() {
                             </select>
                         </div>
                         <div>
-                            <span>Apellido Paterno</span>
+                            <p>Apellido Paterno</p>
                             <input type="text" ref={Apellido_Paterno} />
                         </div>
                         <div>
-                            <span>Apellido Materno</span>
+                            <p>Apellido Materno</p>
                             <input type="text" ref={Apellido_Materno} />
                         </div>
                         <div>
-                            <span>Nombres</span>
+                            <p>Nombres</p>
                             <input type="text" ref={Nombres} />
                         </div>
 
@@ -514,27 +515,27 @@ export default function Trabajador() {
 
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", alignContent: "center" }}>
                         <div>
-                            <span>Identificación</span>
+                            <p>Identificación</p>
                             <input type="number" ref={Identificacion} />
                         </div>
                         <div>
-                            <span>Entidad Bancaria</span>
+                            <p>Entidad Bancaria</p>
                             <input type="text" ref={Entidad_Bancaria} />
                         </div>
                         <div>
-                            <span>Carnet IESS</span>
+                            <p>Carnet IESS</p>
                             <input type="text" ref={CarnetIESS} />
                         </div>
                         <div>
-                            <span>Direccion</span>
+                            <p>Direccion</p>
                             <input type="text" ref={Direccion} />
                         </div>
                         <div>
-                            <span>Telefono Fijo</span>
+                            <p>Telefono Fijo</p>
                             <input type="number" ref={Telefono_Fijo} />
                         </div>
                         <div>
-                            <span>Telefono Movil</span>
+                            <p>Telefono Movil</p>
                             <input type="number" ref={Telefono_Movil} />
                         </div>
 
@@ -554,11 +555,11 @@ export default function Trabajador() {
                             </select>
                         </div>
                         <div>
-                            <span>Numero de cuenta Bancaria</span>
+                            <p>Numero de cuenta Bancaria</p>
                             <input type="number" ref={NumeroCuentaBancaria} />
                         </div>
                         <div>
-                            <p> ocupación :</p>
+                            <p> Ocupación :</p>
                             <select className='select' defaultValue="Seleccione" onChange={(e) => {
                                 setFields({ ...fields, ocupacionPost: e.target.value })
                             }}>
@@ -602,8 +603,8 @@ export default function Trabajador() {
                     </div>
 
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", alignContent: "center", marginTop: "20px" }}>
-                        <div>
-                            <p> nivel Salarial:</p>
+                        <div style={{ width: "100%" }}>
+                            <p> Nivel Salarial:</p>
                             <select className='select' defaultValue="Seleccione" onChange={(e) => {
                                 setFields({ ...fields, nivelSalarialPost: e.target.value })
                             }}>
@@ -617,8 +618,8 @@ export default function Trabajador() {
                             </select>
                         </div>
 
-                        <div>
-                            <p> estado del trabajador:</p>
+                        <div style={{ width: "100%" }}>
+                            <p> Estado del trabajador:</p>
                             <select className='select' defaultValue="Seleccione" onChange={(e) => {
                                 setFields({ ...fields, EstadoTrabajadorPost: e.target.value })
                             }}>
@@ -631,8 +632,8 @@ export default function Trabajador() {
                                 })}
                             </select>
                         </div>
-                        <div>
-                            <p> tipo de Contrato:</p>
+                        <div style={{ width: "100%" }}>
+                            <p> Tipo de Contrato:</p>
                             <select className='select' defaultValue="Seleccione" onChange={(e) => {
                                 setFields({ ...fields, TipoContrato: e.target.value })
                             }}>
@@ -645,8 +646,8 @@ export default function Trabajador() {
                                 })}
                             </select>
                         </div>
-                        <div>
-                            <p> tipo de Cese:</p>
+                        <div style={{ width: "100%" }}>
+                            <p> Tipo de Cese:</p>
                             <select className='select' defaultValue="Seleccione" onChange={(e) => {
                                 setFields({ ...fields, TipoCese: e.target.value })
                             }}>
@@ -659,8 +660,8 @@ export default function Trabajador() {
                                 })}
                             </select>
                         </div>
-                        <div>
-                            <p> estado Civil</p>
+                        <div style={{ width: "100%" }}>
+                            <p> Estado Civil</p>
                             <select className='select' defaultValue="Seleccione" onChange={(e) => {
                                 setFields({ ...fields, EstadoCivil: e.target.value })
                             }}>
@@ -678,8 +679,8 @@ export default function Trabajador() {
                     </div>
 
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", alignContent: "center", marginTop: "20px" }}>
-                        <div>
-                            <p> tipo de Comisión</p>
+                        <div style={{ width: "100%" }}>
+                            <p> Tipo de Comisión</p>
                             <select className='select' defaultValue="Seleccione" onChange={(e) => {
                                 setFields({ ...fields, TipodeComision: e.target.value })
                             }}>
@@ -693,22 +694,22 @@ export default function Trabajador() {
                             </select>
                         </div>
 
-                        <div>
-                            <span>Fecha de Nacimiento</span>
+                        <div style={{ width: "100%" }}>
+                            <p>Fecha de Nacimiento</p>
                             <input type="date" ref={FechaNacimiento} />
                         </div>
-                        <div>
-                            <span>Fecha de Ingreso</span>
+                        <div style={{ width: "100%" }}>
+                            <p>Fecha de Ingreso</p>
                             <input type="date" ref={FechaIngreso} />
                         </div>
 
-                        <div>
-                            <span>Fecha de Cese</span>
+                        <div style={{ width: "100%" }}>
+                            <p>Fecha de Cese</p>
                             <input type="date" ref={FechaCese} />
                         </div>
 
 
-                        <div>
+                        <div style={{ width: "100%" }}>
                             <p> Periodo de Vacaciones:</p>
                             <select className='select' defaultValue="Seleccione" onChange={(e) => {
                                 setFields({ ...fields, periodoVacaciones: e.target.value })
@@ -726,10 +727,42 @@ export default function Trabajador() {
                     </div>
 
                     <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", alignContent: "center", marginTop: "20px" }}>
+                        <div style={{ width: "100%" }}>
+                            <p>Fecha de Reingreso</p>
+                            <input type="date" ref={FechaReingreso} />
+                        </div>
+                        <div style={{ width: "100%" }}>
+                            <p>Fecha de ultima actualización</p>
+                            <input type="date" ref={Fecha_Ult_Actualizacion} />
+                        </div>
 
+                        <div style={{ width: "100%" }}>
+                            <p> Es Reingreso :</p>
+                            <select className='select' defaultValue="Seleccione" onChange={(e) => {
+                                setFields({ ...fields, EsReingresoPost: e.target.value })
+                            }}>
+                                <option value="Seleccione">Seleccione el género</option>
+                                <option value="0">Si</option>
+                                <option value="1">No</option>
 
-                        <div>
-                            <p> Decimo Cuarto:</p>
+                            </select>
+                        </div>
+
+                        <div style={{ width: "100%" }}>
+                            <p> Tipo de Cuenta :</p>
+                            <select className='select' defaultValue="Seleccione" onChange={(e) => {
+                                setFields({ ...fields, EsReingresoPost: e.target.value })
+                            }}>
+                                <option value="Seleccione">Seleccione el género</option>
+                                <option value="2">Corriente</option>
+                                <option value="1">Ahorros</option>
+
+                            </select>
+                        </div>
+
+                        <div style={{ width: "100%" }}>
+
+                            <p> Décimo Tercero:</p>
                             <select className='select' defaultValue="Seleccione" onChange={(e) => {
                                 setFields({ ...fields, decimoCuarto: e.target.value })
                             }}>
@@ -739,7 +772,43 @@ export default function Trabajador() {
 
                             </select>
                         </div>
-                        <div>
+
+
+
+                    </div>
+
+                    <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", alignContent: "center", marginTop: "20px" }}>
+
+
+                        <div style={{ width: "100%" }}>
+
+                            <p> Décimo Cuarto:</p>
+                            <select className='select' defaultValue="Seleccione" onChange={(e) => {
+                                setFields({ ...fields, decimoCuarto: e.target.value })
+                            }}>
+                                <option value="Seleccione">Seleccione</option>
+                                <option value="0">Mensual</option>
+                                <option value="1">Acumulada</option>
+
+                            </select>
+                        </div>
+
+
+
+                        <div style={{ width: "100%" }}>
+                            <p> Bonificación Complementaria:</p>
+
+                            <input type="text" ref={BoniComplementaria} />
+                        </div>
+                        <div style={{ width: "100%" }}>
+                            <p>Bonificación Especial</p>
+                            <input type="text" ref={BoniEspecial} />
+                        </div>
+                        <div style={{ width: "100%" }}>
+                            <p>Remuneración Minima</p>
+                            <input type="text" ref={RemuneracionMinima} />
+                        </div>
+                        <div style={{ width: "100%" }}>
                             <p> fondo de Reserva:</p>
                             <select className='select' defaultValue="Seleccione" onChange={(e) => {
                                 setFields({ ...fields, Fondo_Reserva: e.target.value })
@@ -754,18 +823,9 @@ export default function Trabajador() {
 
                             </select>
                         </div>
-                        <div>
-                            <span>Bonificación Complementaria</span>
-                            <input type="date" ref={BoniComplementaria} />
-                        </div>
-                        <div>
-                            <span>Bonificación Especial</span>
-                            <input type="date" ref={BoniEspecial} />
-                        </div>
-                        <div>
-                            <span>Remuneración Minima</span>
-                            <input type="date" ref={RemuneracionMinima} />
-                        </div>
+                    </div>
+
+                    <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", alignContent: "center", marginTop: "20px" }}>
 
 
 
@@ -774,7 +834,7 @@ export default function Trabajador() {
 
 
                     <center>
-                        <button type='submit' >
+                        <button className='botonActualizar' type='submit' >
                             Ingresar un trabajador
                         </button>
                     </center>
@@ -789,7 +849,7 @@ export default function Trabajador() {
             <div >
                 <h2>Sucursal</h2>
                 <form onSubmit={handleSubmit} >
-                    <span>Seleccione el Emisor</span>
+                    <p>Seleccione el Emisor</p>
 
                     <select className='select' defaultValue="Seleccione" onChange={(e) => {
                         setFields({ ...fields, value: e.target.value })
@@ -811,7 +871,7 @@ export default function Trabajador() {
                 <h2>
                     Centros de Costos Registrados
                 </h2>
-                <MaterialReactTable columns={columns} data={data} enableRowActions />
+                <MaterialReactTable columns={columns} data={data} enableRowActions={false} />
             </div>
 
 

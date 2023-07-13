@@ -77,25 +77,13 @@ export default function CategoriaOcupacional() {
             {
                 accessorKey: 'Codigo',
                 header: 'Codigo',
+                maxSize: 5,
+                maxWidth: 5,
             },
 
             {
                 accessorKey: 'Descripcion',
                 header: 'Descripcion',
-            },
-
-            {
-                accessorKey: 'actions',
-                header: 'Actualizar',
-                Cell: ({ row }) => (
-                    <button onClick={() => handleRowSave(row)}><BsPersonFillUp /> Actualizar</button>
-                ),
-            }, {
-                accessorKey: 'actions2',
-                header: 'Eliminar',
-                Cell: ({ row }) => (
-                    <button className='botonEliminar' onClick={() => handleDelete(row)}><BsPersonFillDash size={15} /> Eliminar</button>
-                ),
             }
         ],
         [],
@@ -135,7 +123,7 @@ export default function CategoriaOcupacional() {
                 <h2>
                     Centros de Costos Registrados
                 </h2>
-                <MaterialReactTable columns={columns} data={data} enableRowActions />
+                <MaterialReactTable columns={columns} data={data} enableRowActions={false} />
             </div>
 
           
